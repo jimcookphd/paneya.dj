@@ -1,18 +1,19 @@
-'use strict';
-const $ = id => document.getElementById(id);
-const audio=$('audio'), list=$('playlist'), title=$('trackTitle'), state=$('state');
-let tracks=[], current=-1;
-const fmt=s=>{if(!Number.isFinite(s))return '00:00';s=Math.floor(s);return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`};
-function render(){list.replaceChildren();$('count').textContent=`${tracks.length} TRACK${tracks.length===1?'':'S'}`;if(!tracks.length){let li=document.createElement('li');li.className='empty';li.textContent='No mixes loaded yet — add MP3 URLs to playlist.json';list.append(li);return;}tracks.forEach((t,i)=>{let li=document.createElement('li');li.textContent=`${String(i+1).padStart(2,'0')}. ${t.title}`;li.className=i===current?'active':'';li.onclick=()=>load(i,true);list.append(li)})}
-function load(i,autoplay=false){if(i<0||i>=tracks.length)return;current=i;audio.src=tracks[i].url;title.textContent=tracks[i].title;$('seek').value=0;$('duration').textContent='00:00';render();if(autoplay)play()}
-async function play(){if(current<0){if(!tracks.length){print('No mixes available yet.');return;}load(0)}try{await audio.play()}catch(e){print('Playback unavailable: '+e.message)}}
-function pause(){audio.pause()}function stop(){audio.pause();audio.currentTime=0;state.textContent='STOP'}function step(d){if(tracks.length)load((current+d+tracks.length)%tracks.length,true)}
-$('play').onclick=play;$('pause').onclick=pause;$('stop').onclick=stop;$('prev').onclick=()=>step(-1);$('next').onclick=()=>step(1);
-$('volume').oninput=e=>audio.volume=Number(e.target.value)/100;audio.volume=.8;
-$('seek').oninput=e=>{if(Number.isFinite(audio.duration)&&audio.duration>0)audio.currentTime=audio.duration*Number(e.target.value)/1000};
-audio.ontimeupdate=()=>{$('elapsed').textContent=fmt(audio.currentTime);if(Number.isFinite(audio.duration)&&audio.duration>0)$('seek').value=Math.round(audio.currentTime/audio.duration*1000)};
-audio.onloadedmetadata=()=>{$('duration').textContent=fmt(audio.duration)};audio.onplay=()=>{state.textContent='PLAY';$('meters').classList.add('playing')};audio.onpause=()=>{state.textContent='PAUSE';$('meters').classList.remove('playing')};audio.onended=()=>step(1);audio.onerror=()=>{if(audio.src)print('Audio unavailable. Check the URL in playlist.json.')};
-function print(s){let div=document.createElement('div');div.textContent=s;$('terminalOutput').append(div);$('terminalOutput').scrollTop=$('terminalOutput').scrollHeight}
-$('commandForm').onsubmit=e=>{e.preventDefault();let raw=$('command').value.trim();$('command').value='';if(!raw)return;print('paneya@dance:~$ '+raw);let [cmd,...args]=raw.split(/\s+/);switch(cmd.toLowerCase()){case 'help':print('Commands: help, ls, play [number], pause, stop, next, prev, about, clear');break;case 'ls':print(tracks.length?tracks.map((t,i)=>`${i+1}  ${t.title}`).join('\n'):'No mixes loaded.');break;case 'play':{let n=args.length?Number(args[0])-1:current;if(n>=0&&n<tracks.length)load(n,true);else play();break}case 'pause':pause();break;case 'stop':stop();break;case 'next':step(1);break;case 'prev':step(-1);break;case 'about':print('P4#!Я / PANEYA — future funk, bass music, and musical experiments.');break;case 'clear':$('terminalOutput').replaceChildren();break;default:print(`${cmd}: command not found (try help)`)}};
-fetch('playlist.json').then(r=>{if(!r.ok)throw Error(r.status);return r.json()}).then(data=>{tracks=Array.isArray(data)?data.filter(t=>t.title&&t.url):[];render()}).catch(()=>{render();print('Could not load playlist.json.')});
-render();
+import Webamp from 'https://unpkg.com/webamp@2.3.1/built/webamp.bundle.min.mjs';
+const output=document.querySelector('#output');
+const status=document.querySelector('#status');
+const print=(message)=>{const div=document.createElement('div');div.textContent=message;output.append(div);output.scrollTop=output.scrollHeight;};
+let tracks=[],webamp;
+try{
+ const response=await fetch('./playlist.json',{cache:'no-store'});
+ if(!response.ok)throw new Error(`playlist.json returned ${response.status}`);
+ const data=await response.json();
+ if(!Array.isArray(data))throw new Error('playlist.json must contain an array');
+ tracks=data.filter(item=>item&&item.url&&item.title).map(item=>({url:item.url,metaData:{artist:item.artist||'P4#!Я',title:item.title},...(Number.isFinite(item.duration)?{duration:item.duration}:{})}));
+ if(!Webamp.browserIsSupported())throw new Error('Webamp is not supported by this browser');
+ webamp=new Webamp({initialTracks:tracks,enableMediaSession:true});
+ await webamp.renderWhenReady(document.getElementById('winamp-container'));
+ status.textContent=`Ready · ${tracks.length} mix${tracks.length===1?'':'es'} loaded · Drag the Winamp windows to arrange them`;
+ print(`Loaded ${tracks.length} mix${tracks.length===1?'':'es'}.`);
+}catch(error){status.textContent='Player failed to initialize: '+error.message;print('ERROR: '+error.message);}
+const commands={help:()=>print('Commands: help, ls, play [number], pause, stop, next, prev, about, clear'),ls:()=>print(tracks.length?tracks.map((t,i)=>`${i+1}. ${t.metaData.title}`).join('\n'):'No mixes in playlist.'),about:()=>print('P4#!Я / PANEYA · future funk, bass, and musical experiments.'),clear:()=>{output.textContent='';},play:(arg)=>{if(!webamp)return print('Player not ready.');if(arg){const n=Number(arg);if(!Number.isInteger(n)||n<1||n>tracks.length)return print('Use play [track number].');webamp.setTracksToPlay(tracks.slice(n-1));}else webamp.play();},pause:()=>webamp?.pause(),stop:()=>webamp?.stop(),next:()=>webamp?.nextTrack(),prev:()=>webamp?.previousTrack()};
+document.querySelector('#shell').addEventListener('submit',event=>{event.preventDefault();const input=document.querySelector('#command');const line=input.value.trim();input.value='';if(!line)return;print('paneya@dance:~$ '+line);const [cmd,...args]=line.split(/\s+/);try{(commands[cmd.toLowerCase()]||(()=>print(`${cmd}: command not found (try help)`)))(args[0]);}catch(error){print('Error: '+error.message);}});

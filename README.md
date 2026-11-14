@@ -1,32 +1,11 @@
 # P4#!Я — paneya.dj
 
-A minimal Winamp-inspired music player and simulated terminal. Static HTML, CSS, and JavaScript; deployed to Cloudflare Pages.
+Version 0.2: Webamp 2.3.1 with its bundled authentic classic Winamp 2.x skin, enlarged to 150%, plus a simulated terminal.
 
-## Adding music
+Static Cloudflare Pages website. Copy index.html, style.css, player.js, playlist.json to the root of the GitHub repository. The player loads MP3s from Cloudflare R2.
 
-Upload MP3s to an audio host with direct HTTPS URLs (Cloudflare R2 is planned). Edit `playlist.json`:
+**Important:** R2 must send CORS headers permitting `https://paneya-dj.pages.dev` (and later `https://paneya.dj`). Webamp's documentation requires CORS for remote tracks. Configure the bucket's CORS policy to allow GET and HEAD, origins `https://paneya-dj.pages.dev`, `https://paneya.dj`, and `https://www.paneya.dj`. For initial testing, `*` is an option for public MP3s. If playback fails, inspect the browser console for CORS errors.
 
-```json
-[
-  {"title": "Future Funk — Take 1", "url": "https://YOUR-AUDIO-HOST/future-funk-01.mp3"},
-  {"title": "Future Funk — Take 2", "url": "https://YOUR-AUDIO-HOST/future-funk-02.mp3"}
-]
-```
+The Webamp JavaScript module loads from unpkg.com. To avoid a third-party runtime dependency later, we can vendor the bundle into the repository. Webamp is MIT-licensed; Winamp skin artwork has separate rights.
 
-Audio hosting must permit browser playback and ideally byte-range requests. If using a different origin, configure CORS there if necessary. Do not put MP3 files in the Git repository.
-
-## Local preview
-
-From this directory:
-
-```bash
-python3 -m http.server 8000
-```
-
-Open `http://localhost:8000` in Firefox. (Use a local server rather than `file://` because the player fetches `playlist.json`.)
-
-## Cloudflare Pages
-
-Deploy the repository root as a static Pages project. No build command or framework needed. Pushes to `main` trigger deployment.
-
-The terminal is a **simulation**, not a real shell.
+Terminal: help, ls, play [number], pause, stop, next, prev, about, clear. `play N` replaces the current Webamp queue with tracks from N onward.
