@@ -43,4 +43,13 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
   .terminal.floating-terminal { width: calc(100vw - 24px); }
   .terminal.floating-terminal .output { max-height: 35vh; }
 }
+/* Move the Webamp interface below the page header */
+#webamp {
+  transform: translateY(100px) !important;
+}
 
+@media (max-width: 600px) {
+  #webamp {
+    transform: translateY(140px) !important;
+  }
+}
