@@ -53,3 +53,25 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
     transform: translateY(140px) !important;
   }
 }
+/* Mobile: Winamp floats above the terminal */
+@media (max-width: 600px) {
+
+  /* Keep Webamp above the terminal */
+  #webamp {
+    z-index: 2000 !important;
+    transform: translateY(30px) !important;
+  }
+
+  /* Terminal remains behind Winamp */
+  .terminal.floating-terminal {
+    z-index: 1000 !important;
+  }
+
+  /* Prevent the player container from taking up page space */
+  #winamp-container {
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
