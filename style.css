@@ -1,1 +1,201 @@
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 40% 10%,#304355 0%,#141a22 70%);font-family:Verdana,Arial,sans-serif;color:#dce6e9}header{padding:22px 30px;border-bottom:1px solid #526476;display:flex;align-items:baseline;gap:18px}header strong{font-size:26px;color:#c8f977}header span{font-size:13px;color:#9bb2bd}main{max-width:1200px;margin:25px auto;padding:0 24px}#winamp-container{position:relative;width:950px;height:755px;margin-bottom:20px;zoom:1.95}.terminal{position:relative;border:12px solid #262e2a;border-radius:28px/18px;background:radial-gradient(ellipse at center,#071b0e 0%,#020a05 85%);max-width:950px;box-shadow:inset 0 0 36px #000,0 0 0 3px #69716a,10px 14px 18px #0009;font:20px/1.5 'DejaVu Sans Mono',monospace;color:#7cff8b;text-shadow:0 0 5px #46ff6280;overflow:hidden}.terminal::after{content:"";pointer-events:none;position:absolute;inset:0;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,#0002 4px);opacity:.35}.terminal .bar{background:#0a150e;color:#7cff8b;border-bottom:1px solid #416b46;font:16px/1.4 'DejaVu Sans Mono',monospace;letter-spacing:.06em;padding:7px 15px}.terminal .bar span{display:none}.terminal .output{padding:20px 24px 5px;min-height:120px;max-height:320px}.terminal #shell{padding:8px 24px 24px}.terminal #command{color:#7cff8b;text-shadow:0 0 5px #46ff6280;caret-color:#8dff91}.terminal #command:focus{outline:none}.bar{background:linear-gradient(90deg,#23466e,#5d748d);color:white;padding:5px 12px;font:bold 14px Verdana}.bar span{float:right}.output{padding:14px 17px 4px;white-space:pre-wrap;min-height:90px;max-height:230px;overflow:auto}.output b{color:#e1f987}#shell{display:flex;gap:8px;padding:4px 17px 15px}#shell label{white-space:nowrap}#command{background:transparent;color:#b0ffae;border:0;outline:none;font:inherit;width:100%}.note{font:13px monospace;color:#9db2b9}@media(max-width:1000px){#winamp-container{zoom:1.5;width:750px;height:590px}}@media(max-width:600px){#winamp-container{zoom:1;min-height:430px;height:450px;width:100%}header{padding:14px}header span{font-size:11px}.terminal{font-size:13px}}
+/* =========================================================
+   P4#!Я / PANEYA MUSIC SYSTEM — v0.3
+   ========================================================= */
+
+/* ---------- Page ---------- */
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(
+    ellipse at 40% 10%,
+    #304355 0%,
+    #141a22 70%
+  );
+  font-family: Verdana, Arial, sans-serif;
+  color: #dce6e9;
+}
+
+/* ---------- Header ---------- */
+
+header {
+  padding: 22px 30px;
+  border-bottom: 1px solid #526476;
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+}
+
+header strong {
+  font-size: 26px;
+  color: #c8f977;
+}
+
+header span {
+  font-size: 13px;
+  color: #9bb2bd;
+}
+
+/* ---------- Main layout ---------- */
+
+main {
+  max-width: 1200px;
+  margin: 25px auto;
+  padding: 0 24px;
+}
+
+/* ---------- Winamp ---------- */
+
+/*
+   Webamp supplies its own CSS and bitmap graphics.
+   Avoid global selectors that affect its internal elements.
+*/
+
+#winamp-container {
+  position: relative;
+  width: 950px;
+  height: 755px;
+  margin-bottom: 20px;
+  zoom: 1.95;
+}
+
+/* ---------- VT100 terminal ---------- */
+
+.terminal {
+  position: relative;
+  border: 12px solid #262e2a;
+  border-radius: 28px / 18px;
+  background: radial-gradient(
+    ellipse at center,
+    #071b0e 0%,
+    #020a05 85%
+  );
+  max-width: 950px;
+  box-shadow:
+    inset 0 0 36px #000,
+    0 0 0 3px #69716a,
+    10px 14px 18px #0009;
+
+  font: 20px/1.5 'DejaVu Sans Mono', monospace;
+  color: #7cff8b;
+  text-shadow: 0 0 5px #46ff6280;
+  overflow: hidden;
+}
+
+/* Subtle CRT scanlines */
+
+.terminal::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    #0002 4px
+  );
+  opacity: 0.35;
+}
+
+/* Terminal title bar */
+
+.terminal .bar {
+  background: #0a150e;
+  color: #7cff8b;
+  border-bottom: 1px solid #416b46;
+  font: 16px/1.4 'DejaVu Sans Mono', monospace;
+  letter-spacing: 0.06em;
+  padding: 7px 15px;
+}
+
+.terminal .bar span {
+  display: none;
+}
+
+/* Terminal output */
+
+.terminal .output {
+  padding: 20px 24px 5px;
+  min-height: 120px;
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.terminal .output b {
+  color: #e1f987;
+}
+
+/* Command input */
+
+.terminal #shell {
+  display: flex;
+  gap: 8px;
+  padding: 8px 24px 24px;
+}
+
+.terminal #shell label {
+  white-space: nowrap;
+}
+
+.terminal #command {
+  background: transparent;
+  color: #7cff8b;
+  text-shadow: 0 0 5px #46ff6280;
+  caret-color: #8dff91;
+  border: 0;
+  outline: none;
+  font: inherit;
+  width: 100%;
+}
+
+.terminal #command:focus {
+  outline: none;
+}
+
+/* ---------- Status note ---------- */
+
+.note {
+  font: 13px monospace;
+  color: #9db2b9;
+}
+
+/* ---------- Responsive layout ---------- */
+
+@media (max-width: 1000px) {
+
+  #winamp-container {
+    zoom: 1.5;
+    width: 750px;
+    height: 590px;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  #winamp-container {
+    zoom: 1;
+    min-height: 430px;
+    height: 450px;
+    width: 100%;
+  }
+
+  header {
+    padding: 14px;
+  }
+
+  header span {
+    font-size: 11px;
+  }
+
+  .terminal {
+    font-size: 13px;
+  }
+
+}
