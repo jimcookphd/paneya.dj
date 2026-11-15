@@ -26,7 +26,7 @@
   let stored;
   try { stored = JSON.parse(localStorage.getItem(key)); } catch (_) {}
   const defaultX = Math.max(16, window.innerWidth - Math.min(560, window.innerWidth - 32) - 24);
-  const defaultY = 100;
+  const defaultY = mobile() ? 90 : 100;
   place(Number.isFinite(stored?.x) ? stored.x : defaultX,
         Number.isFinite(stored?.y) ? stored.y : defaultY);
 
@@ -49,12 +49,17 @@
     drag = null;
     localStorage.setItem(key, JSON.stringify({
       x: parseFloat(terminal.style.left), y: parseFloat(terminal.style.top)
-    }));
+  }));
   };
   bar.addEventListener('pointerup', finish);
   bar.addEventListener('pointercancel', finish);
+  
   window.addEventListener('resize', () => {
-    const rect = terminal.getBoundingClientRect();
-    place(rect.left, rect.top);
-  });
+    // Mobile browsers change viewport dimensions as their
+    // interface appears and disappears. Leave the terminal alone.
+    if (window.matchMedia('(max-width: 600px)').matches) return;
+
+  const rect = terminal.getBoundingClientRect();
+  place(rect.left, rect.top);
+});
 })();
