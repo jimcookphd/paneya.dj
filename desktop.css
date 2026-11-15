@@ -75,3 +75,29 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
     padding: 0 !important;
   }
 }
+/* Desktop: allow Winamp to appear above the terminal initially */
+@media (min-width: 601px) {
+  #webamp {
+    z-index: 1100 !important;
+  }
+
+  .terminal.floating-terminal {
+    z-index: 1000;
+  }
+
+  /* Clicking the terminal brings it forward */
+  .terminal.floating-terminal:focus-within {
+    z-index: 1200;
+  }
+}
+
+/* Mobile: Winamp always stays on top */
+@media (max-width: 600px) {
+  #webamp {
+    z-index: 2000 !important;
+  }
+
+  .terminal.floating-terminal {
+    z-index: 1000 !important;
+  }
+}
