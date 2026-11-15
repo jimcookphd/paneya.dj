@@ -11,12 +11,36 @@
   <header>
     <strong>P4#!Я</strong>
     <span>paneya.dj · future funk / bass / experiments</span>
+    <nav class="site-navigation" aria-label="Site navigation">
+      <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" aria-label="Menu">☰ <span>Menu</span></button>
+      <div id="site-menu" hidden>
+        <button type="button" data-panel="accessible-player">Music player</button>
+        <button type="button" id="focus-terminal">Terminal</button>
+        <button type="button" data-panel="about-panel">About P4#!Я</button>
+      </div>
+    </nav>
   </header>
   <main>
+    <p class="sr-only">Welcome to danceOS. Use the Menu button to open a standard accessible music player, the terminal, or information about P4#!Я.</p>
+    <section id="accessible-player" class="accessible-panel" hidden aria-labelledby="accessible-heading">
+      <h1 id="accessible-heading">Music player</h1>
+      <p>Select a mix, then use the standard audio controls. No keyboard shortcuts required.</p>
+      <label for="mix-select">Choose a mix</label>
+      <select id="mix-select"></select>
+      <audio id="accessible-audio" controls preload="none" aria-label="Selected music mix"></audio>
+      <p id="accessible-status" role="status" aria-live="polite">Choose a mix to begin.</p>
+      <button type="button" class="close-panel">Close music player</button>
+    </section>
+    <section id="about-panel" class="accessible-panel" hidden aria-labelledby="about-heading">
+      <h1 id="about-heading">About P4#!Я</h1>
+      <p>P4#!Я (Paneya) — independent DJ mixes, future funk, bass, movement, and experimentation.</p>
+      <p>Plan: Make people dance.</p>
+      <button type="button" class="close-panel">Close about</button>
+    </section>
     <div id="winamp-container" aria-label="Classic Winamp music player"></div>
     <section class="terminal" aria-label="danceOS terminal">
       <div class="bar">▣ anonymous@dance:~ <span>□ ×</span></div>
-      <div id="output" class="output" aria-live="polite"></div>
+      <div id="output" class="output" ></div>
       <form id="shell">
         <label for="command">anonymous@dance:~$</label>
         <input id="command" autocomplete="off" spellcheck="false" aria-label="Terminal command" disabled>

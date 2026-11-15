@@ -4,6 +4,69 @@ const output = document.querySelector('#output');
 const status = document.querySelector('#status');
 const input = document.querySelector('#command');
 const prompt = 'anonymous@dance:~$ ';
+const menuToggle = document.querySelector('#menu-toggle');
+const siteMenu = document.querySelector('#site-menu');
+const mixSelect = document.querySelector('#mix-select');
+const accessibleAudio = document.querySelector('#accessible-audio');
+const accessibleStatus = document.querySelector('#accessible-status');
+let activePanel = null;
+
+function toggleMenu(open) {
+  siteMenu.hidden = !open;
+  menuToggle.setAttribute('aria-expanded', String(open));
+}
+menuToggle.addEventListener('click', () => toggleMenu(siteMenu.hidden));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !siteMenu.hidden) {
+    toggleMenu(false);
+    menuToggle.focus();
+  }
+});
+document.addEventListener('click', event => {
+  if (!event.target.closest('.site-navigation')) toggleMenu(false);
+});
+function openPanel(id) {
+  if (activePanel) document.getElementById(activePanel).hidden = true;
+  activePanel = id;
+  const panel = document.getElementById(id);
+  panel.hidden = false;
+  panel.querySelector('h1').setAttribute('tabindex', '-1');
+  panel.querySelector('h1').focus();
+}
+document.querySelectorAll('[data-panel]').forEach(button => button.addEventListener('click', () => {
+  toggleMenu(false);
+  openPanel(button.dataset.panel);
+}));
+document.querySelector('#focus-terminal').addEventListener('click', () => {
+  toggleMenu(false);
+  document.querySelector('#command').focus();
+});
+document.querySelectorAll('.close-panel').forEach(button => button.addEventListener('click', () => {
+  button.closest('.accessible-panel').hidden = true;
+  activePanel = null;
+  menuToggle.focus();
+}));
+function chooseMix(index) {
+  const item = tracks[index];
+  if (!item) return;
+  accessibleAudio.pause();
+  accessibleAudio.src = item.url;
+  accessibleAudio.load();
+  accessibleStatus.textContent = `Selected: ${item.metaData.title}`;
+}
+mixSelect.addEventListener('change', () => chooseMix(Number(mixSelect.value)));
+accessibleAudio.addEventListener('play', () => {
+  // Prevent two separate playback engines playing at the same time.
+  if (webamp) webamp.pause();
+  accessibleStatus.textContent = `Playing: ${tracks[Number(mixSelect.value)]?.metaData.title || 'mix'}`;
+});
+accessibleAudio.addEventListener('pause', () => {
+  if (!accessibleAudio.ended) accessibleStatus.textContent = 'Paused';
+});
+accessibleAudio.addEventListener('error', () => {
+  accessibleStatus.textContent = 'Audio unavailable. Please try another mix.';
+});
+
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 let tracks = [];
 let webamp = null;
@@ -113,6 +176,7 @@ async function execute(line) {
     case 'date': print(new Date().toString()); return;
     case 'clear': output.replaceChildren(); return;
     case 'play':
+      accessibleAudio.pause();
       if (!webamp) return print('winamp: not running');
       if (args[0]) {
         const n = Number(args[0]);
@@ -179,6 +243,15 @@ try {
     metaData: { artist: item.artist || 'P4#!Я', title: item.title },
     ...(Number.isFinite(item.duration) ? { duration: item.duration } : {})
   }));
+  mixSelect.replaceChildren();
+  tracks.forEach((track, index) => {
+    const option = document.createElement('option');
+    option.value = String(index);
+    option.textContent = track.metaData.title;
+    mixSelect.append(option);
+  });
+  if (tracks.length) chooseMix(0);
+  else accessibleStatus.textContent = 'No mixes available.';
   await boot();
 } catch (error) {
   status.textContent = `Startup failed: ${error.message}`;

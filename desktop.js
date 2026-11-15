@@ -9,7 +9,8 @@
   bar.classList.add('terminal-drag-handle');
   bar.title = 'Drag to move terminal';
 
-  const key = 'paneya-terminal-position-v04';
+  const mobile = () => window.matchMedia('(max-width: 600px)').matches;
+  const key = mobile() ? 'paneya-terminal-position-mobile-v05' : 'paneya-terminal-position-v04';
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(v, hi));
   const fit = (x, y) => ({
     x: clamp(x, 0, Math.max(0, window.innerWidth - Math.min(terminal.offsetWidth, 120))),
@@ -37,7 +38,7 @@
     drag = { pointerId: event.pointerId, dx: event.clientX - rect.left,
              dy: event.clientY - rect.top };
     bar.setPointerCapture(event.pointerId);
-    terminal.style.zIndex = '9999';
+    terminal.style.zIndex = mobile() ? '1000' : '9999';
     event.preventDefault();
   });
   bar.addEventListener('pointermove', event => {
@@ -49,17 +50,15 @@
     drag = null;
     localStorage.setItem(key, JSON.stringify({
       x: parseFloat(terminal.style.left), y: parseFloat(terminal.style.top)
-  }));
+    }));
   };
   bar.addEventListener('pointerup', finish);
   bar.addEventListener('pointercancel', finish);
-  
+  // Mobile browser chrome changes the visual viewport as Webamp opens.
+  // Never reposition the terminal on those resize events.
   window.addEventListener('resize', () => {
-    // Mobile browsers change viewport dimensions as their
-    // interface appears and disappears. Leave the terminal alone.
-    if (window.matchMedia('(max-width: 600px)').matches) return;
-
-  const rect = terminal.getBoundingClientRect();
-  place(rect.left, rect.top);
-});
+    if (mobile()) return;
+    const rect = terminal.getBoundingClientRect();
+    place(rect.left, rect.top);
+  });
 })();

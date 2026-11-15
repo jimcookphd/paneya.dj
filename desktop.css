@@ -1,17 +1,7 @@
-/* danceOS v0.5 — desktop layout */
-
-html, body {
-  min-height: 100%;
-}
-
-main {
-  max-width: none;
-  margin: 12px 0;
-  padding: 0 24px;
-}
-
+/* danceOS v0.5: floating terminal and responsive Webamp sizing. */
+html, body { min-height: 100%; }
+main { max-width: none; margin: 12px 0; padding: 0 24px; }
 /* Webamp manages its own floating windows. */
-
 #winamp-container {
   position: relative;
   height: 1px;
@@ -19,9 +9,6 @@ main {
   margin-bottom: 0;
   zoom: 2.15;
 }
-
-/* Floating VT100 terminal */
-
 .terminal.floating-terminal {
   position: fixed;
   z-index: 1000;
@@ -32,51 +19,36 @@ main {
   font-size: 16px;
   line-height: 1.45;
 }
-
 .terminal .terminal-drag-handle {
   cursor: grab;
   user-select: none;
   touch-action: none;
 }
-
-.terminal .terminal-drag-handle:active {
-  cursor: grabbing;
-}
-
+.terminal .terminal-drag-handle:active { cursor: grabbing; }
 .terminal.floating-terminal .output {
   max-height: 48vh;
   overflow: auto;
   font-size: 16px;
 }
-
-.terminal.floating-terminal #shell {
-  font-size: 16px;
+.terminal.floating-terminal #shell { font-size: 16px; }
+.terminal.floating-terminal .bar { font-size: 14px; }
+@media (max-width: 800px) {
+  #winamp-container { zoom: 1.65; }
+}
+@media (max-width: 600px) {
+  main { padding: 0 8px; }
+  #winamp-container { zoom: 1.15; }
+  .terminal.floating-terminal { width: calc(100vw - 24px); }
+  .terminal.floating-terminal .output { max-height: 35vh; }
 }
 
-.terminal.floating-terminal .bar {
-  font-size: 14px;
-}
-
-/* Default Webamp position */
-
+/* Webamp positioning and stacking — desktop and phone. */
 #webamp {
   transform: translateY(100px) !important;
 }
 
-/* Intermediate screens */
-
-@media (max-width: 800px) {
-  #winamp-container {
-    zoom: 1.65;
-  }
-}
-
-/* Desktop */
-
 @media (min-width: 601px) {
-
-  /* Move Winamp down an additional 216px. */
-
+  /* 100px original offset + approximately 216px (40% terminal height). */
   #webamp {
     transform: translateY(316px) !important;
     z-index: 1100 !important;
@@ -86,62 +58,59 @@ main {
     z-index: 1000;
   }
 
-  /* Clicking inside the terminal brings it forward. */
-
   .terminal.floating-terminal:focus-within {
     z-index: 1200;
   }
 }
 
-/* Phones */
-
 @media (max-width: 600px) {
+  /* Keep the mobile layout unchanged: Winamp above the terminal. */
+  #webamp {
+    transform: translateY(30px) !important;
+    z-index: 2000 !important;
+  }
 
-  main {
-    padding: 0 8px;
+  .terminal.floating-terminal {
+    z-index: 1000 !important;
   }
 
   #winamp-container {
-    zoom: 1.15;
     height: 0 !important;
     min-height: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
   }
-
-  .terminal.floating-terminal {
-    width: calc(100vw - 24px);
-    z-index: 1000 !important;
-  }
-
-  .terminal.floating-terminal .output {
-    max-height: 35vh;
-  }
-
-  /* Winamp always stays above the terminal. */
-
-  #webamp {
-    transform: translateY(30px) !important;
-    z-index: 2000 !important;
-  }
 }
-/* Pixel: move Winamp below the top edge */
+
+/* Current tested mobile placement: 400px below initial Webamp anchor. */
 @media (max-width: 600px) {
-  #webamp {
-    transform: translateY(100px) !important;
-  }
+  #webamp { transform: translateY(400px) !important; z-index: 2000 !important; }
 }
-/* Phone: lower Winamp by approximately 40% of terminal height */
-@media (max-width: 600px) {
-  #webamp {
-    transform: translateY(300px) !important;
-    z-index: 2000 !important;
-  }
+
+/* Accessible navigation stays above Webamp and terminal. */
+header { position: relative; z-index: 5000; }
+.site-navigation { margin-left: auto; position: relative; }
+.site-navigation button, .accessible-panel button, .accessible-panel select {
+  font: inherit; min-height: 44px; cursor: pointer;
 }
-/* Phone: lower Winamp another 20% of terminal height */
+#menu-toggle { background: #243748; color: #fff; border: 1px solid #8da1af; border-radius: 5px; padding: 8px 12px; }
+#site-menu { position: absolute; right: 0; top: 100%; width: max-content; max-width: 90vw;
+  background: #14212b; border: 1px solid #93a9b6; padding: 6px; box-shadow: 0 5px 18px #0009; }
+#site-menu[hidden], .accessible-panel[hidden] { display: none !important; }
+#site-menu button { display: block; width: 100%; text-align: left; background: transparent;
+  color: #fff; border: 0; padding: 8px 14px; }
+#site-menu button:hover, #site-menu button:focus-visible { background: #36556d; }
+.accessible-panel { position: relative; z-index: 4500; max-width: 600px; margin: 16px 0 20px;
+  padding: 18px; background: #101c25; color: #f3f7f9; border: 2px solid #9ab0bd; border-radius: 8px; }
+.accessible-panel h1 { font-size: 1.4rem; margin-top: 0; }
+.accessible-panel select { display: block; width: 100%; max-width: 100%; margin: 8px 0 16px; }
+.accessible-panel audio { display: block; width: 100%; margin-bottom: 12px; }
+.accessible-panel button { padding: 8px 14px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 @media (max-width: 600px) {
-  #webamp {
-    transform: translateY(400px) !important;
-    z-index: 2000 !important;
-  }
+  header { flex-wrap: wrap; gap: 8px; }
+  .site-navigation { margin-left: auto; }
+  #menu-toggle span { font-size: 0.9rem; }
+  .accessible-panel { margin: 12px 4px; }
 }
