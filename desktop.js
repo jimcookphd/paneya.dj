@@ -10,7 +10,8 @@
   bar.title = 'Drag to move terminal';
 
   const mobile = () => window.matchMedia('(max-width: 600px)').matches;
-  const key = mobile() ? 'paneya-terminal-position-mobile-v05' : 'paneya-terminal-position-v04';
+  const oldKey = mobile() ? 'paneya-terminal-position-mobile-v05' : 'paneya-terminal-position-v04';
+  const key = mobile() ? 'paneya-terminal-position-mobile-v06' : 'paneya-terminal-position-v06';
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(v, hi));
   const fit = (x, y) => ({
     x: clamp(x, 0, Math.max(0, window.innerWidth - Math.min(terminal.offsetWidth, 120))),
@@ -26,8 +27,19 @@
 
   let stored;
   try { stored = JSON.parse(localStorage.getItem(key)); } catch (_) {}
+  if (!stored) {
+    // One-time migration: retain the previous horizontal position and
+    // lower the terminal by roughly three lines of 16px terminal text.
+    try {
+      const previous = JSON.parse(localStorage.getItem(oldKey));
+      if (previous && Number.isFinite(previous.y)) {
+        stored = { x: previous.x, y: previous.y + 72 };
+        localStorage.setItem(key, JSON.stringify(stored));
+      }
+    } catch (_) {}
+  }
   const defaultX = Math.max(16, window.innerWidth - Math.min(560, window.innerWidth - 32) - 24);
-  const defaultY = mobile() ? 90 : 100;
+  const defaultY = mobile() ? 162 : 172;
   place(Number.isFinite(stored?.x) ? stored.x : defaultX,
         Number.isFinite(stored?.y) ? stored.y : defaultY);
 
