@@ -125,3 +125,9 @@ main {
     z-index: 2000 !important;
   }
 }
+/* Pixel: move Winamp below the top edge */
+@media (max-width: 600px) {
+  #webamp {
+    transform: translateY(100px) !important;
+  }
+}
