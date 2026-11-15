@@ -1,16 +1,27 @@
-/* danceOS v0.5: floating terminal and responsive Webamp sizing. */
-html, body { min-height: 100%; }
-main { max-width: none; margin: 12px 0; padding: 0 24px; }
+/* danceOS v0.5 — desktop layout */
+
+html, body {
+  min-height: 100%;
+}
+
+main {
+  max-width: none;
+  margin: 12px 0;
+  padding: 0 24px;
+}
+
 /* Webamp manages its own floating windows. */
+
 #winamp-container {
   position: relative;
-  /* Webamp centers its floating windows on this anchor. */
-  top: 105px;
   height: 1px;
   min-height: 0;
   margin-bottom: 0;
   zoom: 2.15;
 }
+
+/* Floating VT100 terminal */
+
 .terminal.floating-terminal {
   position: fixed;
   z-index: 1000;
@@ -21,63 +32,53 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
   font-size: 16px;
   line-height: 1.45;
 }
+
 .terminal .terminal-drag-handle {
   cursor: grab;
   user-select: none;
   touch-action: none;
 }
-.terminal .terminal-drag-handle:active { cursor: grabbing; }
+
+.terminal .terminal-drag-handle:active {
+  cursor: grabbing;
+}
+
 .terminal.floating-terminal .output {
   max-height: 48vh;
   overflow: auto;
   font-size: 16px;
 }
-.terminal.floating-terminal #shell { font-size: 16px; }
-.terminal.floating-terminal .bar { font-size: 14px; }
-@media (max-width: 800px) {
-  #winamp-container { zoom: 1.65; }
+
+.terminal.floating-terminal #shell {
+  font-size: 16px;
 }
-@media (max-width: 600px) {
-  main { padding: 0 8px; }
-  #winamp-container { top: 145px; zoom: 1.15; }
-  .terminal.floating-terminal { width: calc(100vw - 24px); }
-  .terminal.floating-terminal .output { max-height: 35vh; }
+
+.terminal.floating-terminal .bar {
+  font-size: 14px;
 }
-/* Move the Webamp interface below the page header */
+
+/* Default Webamp position */
+
 #webamp {
   transform: translateY(100px) !important;
 }
 
-@media (max-width: 600px) {
-  #webamp {
-    transform: translateY(140px) !important;
-  }
-}
-/* Mobile: Winamp floats above the terminal */
-@media (max-width: 600px) {
+/* Intermediate screens */
 
-  /* Keep Webamp above the terminal */
-  #webamp {
-    z-index: 2000 !important;
-    transform: translateY(30px) !important;
-  }
-
-  /* Terminal remains behind Winamp */
-  .terminal.floating-terminal {
-    z-index: 1000 !important;
-  }
-
-  /* Prevent the player container from taking up page space */
+@media (max-width: 800px) {
   #winamp-container {
-    height: 0 !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    zoom: 1.65;
   }
 }
-/* Desktop: allow Winamp to appear above the terminal initially */
+
+/* Desktop */
+
 @media (min-width: 601px) {
+
+  /* Move Winamp down an additional 216px. */
+
   #webamp {
+    transform: translateY(316px) !important;
     z-index: 1100 !important;
   }
 
@@ -85,27 +86,42 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
     z-index: 1000;
   }
 
-  /* Clicking the terminal brings it forward */
+  /* Clicking inside the terminal brings it forward. */
+
   .terminal.floating-terminal:focus-within {
     z-index: 1200;
   }
 }
 
-/* Mobile: Winamp always stays on top */
+/* Phones */
+
 @media (max-width: 600px) {
-  #webamp {
-    z-index: 2000 !important;
+
+  main {
+    padding: 0 8px;
+  }
+
+  #winamp-container {
+    zoom: 1.15;
+    height: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .terminal.floating-terminal {
+    width: calc(100vw - 24px);
     z-index: 1000 !important;
   }
-}
-/* Desktop: lower Winamp by 40% of the terminal height */
-@media (min-width: 601px) {
+
+  .terminal.floating-terminal .output {
+    max-height: 35vh;
+  }
+
+  /* Winamp always stays above the terminal. */
+
   #webamp {
-    transform: translateY(
-      calc(100px + 40vh * 0.4)
-    ) !important;
+    transform: translateY(30px) !important;
+    z-index: 2000 !important;
   }
 }
