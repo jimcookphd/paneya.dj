@@ -131,3 +131,10 @@ main {
     transform: translateY(100px) !important;
   }
 }
+/* Phone: lower Winamp by approximately 40% of terminal height */
+@media (max-width: 600px) {
+  #webamp {
+    transform: translateY(300px) !important;
+    z-index: 2000 !important;
+  }
+}
