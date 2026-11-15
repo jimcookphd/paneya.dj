@@ -1,24 +1,43 @@
-/* Paneya desktop v0.4: compact page, floating terminal. */
+/* danceOS v0.5: floating terminal and responsive Webamp sizing. */
 html, body { min-height: 100%; }
 main { max-width: none; margin: 12px 0; padding: 0 24px; }
-/* Webamp positions its own windows; don't reserve a huge vertical column. */
-#winamp-container { height: 1px; min-height: 0; margin-bottom: 0; }
+/* Webamp manages its own floating windows. */
+#winamp-container {
+  position: relative;
+  height: 1px;
+  min-height: 0;
+  margin-bottom: 0;
+  zoom: 2.15;
+}
 .terminal.floating-terminal {
   position: fixed;
   z-index: 1000;
-  width: min(540px, calc(100vw - 32px));
+  width: min(620px, calc(100vw - 32px));
   max-width: none;
   box-sizing: border-box;
   margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
 }
 .terminal .terminal-drag-handle {
-  cursor: move;
   cursor: grab;
   user-select: none;
   touch-action: none;
 }
 .terminal .terminal-drag-handle:active { cursor: grabbing; }
-.terminal.floating-terminal .output { max-height: 35vh; }
+.terminal.floating-terminal .output {
+  max-height: 48vh;
+  overflow: auto;
+  font-size: 16px;
+}
+.terminal.floating-terminal #shell { font-size: 16px; }
+.terminal.floating-terminal .bar { font-size: 14px; }
+@media (max-width: 800px) {
+  #winamp-container { zoom: 1.65; }
+}
 @media (max-width: 600px) {
-  .terminal.floating-terminal { width: calc(100vw - 32px); }
+  main { padding: 0 8px; }
+  #winamp-container { zoom: 1.15; }
+  .terminal.floating-terminal { width: calc(100vw - 24px); }
+  .terminal.floating-terminal .output { max-height: 35vh; }
 }
