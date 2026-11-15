@@ -3,7 +3,19 @@ import Webamp from 'https://unpkg.com/webamp@2.3.1/built/webamp.bundle.min.mjs';
 const output = document.querySelector('#output');
 const status = document.querySelector('#status');
 const input = document.querySelector('#command');
-const prompt = 'anonymous@dance:~$ ';
+let currentDirectory = '/home/anonymous';
+
+function shellPrompt() {
+  const location = currentDirectory === '/home/anonymous' ? '~' : '~/Music';
+  return `anonymous@dance:${location}$ `;
+}
+
+function musicFilenames() {
+  return tracks.map(track => {
+    const pathname = new URL(track.url, window.location.href).pathname;
+    return decodeURIComponent(pathname.split('/').pop());
+  });
+}
 const menuToggle = document.querySelector('#menu-toggle');
 const siteMenu = document.querySelector('#site-menu');
 const mixSelect = document.querySelector('#mix-select');
@@ -72,6 +84,15 @@ let tracks = [];
 let webamp = null;
 let playerStarting = false;
 let pid = 1842;
+const llamaSound = new Audio('./llama.mp3');
+llamaSound.preload = 'none';
+
+function playLlamaSound() {
+  llamaSound.currentTime = 0;
+  llamaSound.play().catch(() => {
+    // Browsers may block audio during the automated login sequence.
+  });
+}
 
 function print(message = '') {
   const line = document.createElement('div');
@@ -82,7 +103,7 @@ function print(message = '') {
 
 async function typeCommand(command) {
   const line = document.createElement('div');
-  line.textContent = prompt;
+  line.textContent = shellPrompt();
   output.append(line);
   for (const char of command) {
     line.textContent += char;
@@ -132,7 +153,7 @@ function showFinger() {
   print('Plan: Make people dance.');
 }
 
-async function execute(line) {
+async function execute(line, interactive = false) {
   const [command, ...args] = line.trim().split(/\s+/);
   switch (command?.toLowerCase()) {
     case '': return;
@@ -148,6 +169,7 @@ async function execute(line) {
       if (webamp) return print('winamp: already running');
       print(`[1] ${pid}`);
       print('Starting Winamp...');
+      if (interactive) playLlamaSound();
       await startWinamp();
       return;
     case 'ps':
@@ -163,14 +185,31 @@ async function execute(line) {
       if (args.includes('winamp')) await stopWinamp();
       else print('pkill: no matching processes');
       return;
+    case 'cd': {
+      const destination = args[0] || '~';
+      if (destination === '~' || destination === '/home/anonymous' ||
+          destination === '..' || destination === '../') {
+        currentDirectory = '/home/anonymous';
+      } else if ((destination === 'Music' && currentDirectory === '/home/anonymous') ||
+                 destination === '/home/anonymous/Music' ||
+                 (destination === '.' || destination === './')) {
+        if (destination !== '.' && destination !== './') {
+          currentDirectory = '/home/anonymous/Music';
+        }
+      } else {
+        print(`cd: ${destination}: No such file or directory`);
+      }
+      return;
+    }
     case 'ls':
-      print('Music  .plan');
+      if (currentDirectory === '/home/anonymous') print('Music  .plan');
+      else musicFilenames().forEach(filename => print(filename));
       return;
     case 'cat':
-      if (args[0] === '.plan') print('Make people dance.');
+      if (args[0] === '.plan' && currentDirectory === '/home/anonymous') print('Make people dance.');
       else print(`cat: ${args[0] || ''}: No such file`);
       return;
-    case 'pwd': print('/home/anonymous'); return;
+    case 'pwd': print(currentDirectory); return;
     case 'whoami': print('anonymous'); return;
     case 'uname': print(args.includes('-a') ? 'Linux dance 6.12.0-amd64 x86_64 GNU/Linux' : 'Linux'); return;
     case 'date': print(new Date().toString()); return;
@@ -224,9 +263,9 @@ document.querySelector('#shell').addEventListener('submit', async event => {
   const line = input.value.trim();
   input.value = '';
   if (!line) return;
-  print(prompt + line);
+  print(shellPrompt() + line);
   input.disabled = true;
-  try { await execute(line); }
+  try { await execute(line, true); }
   catch (error) { print(`sh: ${error.message}`); }
   finally {
     if (line !== 'exit') { input.disabled = false; input.focus(); }

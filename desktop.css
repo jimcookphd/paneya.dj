@@ -48,10 +48,15 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
 }
 
 @media (min-width: 601px) {
-  /* 100px original offset + approximately 216px (40% terminal height). */
+  /* Place Webamp independently of the terminal and page flow. */
   #webamp {
-    transform: translateY(316px) !important;
-    z-index: 1100 !important;
+    position: fixed !important;
+    left: 520px !important;
+    top: 180px !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: 2000 !important;
   }
 
   .terminal.floating-terminal {
@@ -59,14 +64,14 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
   }
 
   .terminal.floating-terminal:focus-within {
-    z-index: 1200;
+    z-index: 1000;
   }
 }
 
 @media (max-width: 600px) {
   /* Keep the mobile layout unchanged: Winamp above the terminal. */
   #webamp {
-    transform: translateY(30px) !important;
+    transform: none !important;
     z-index: 2000 !important;
   }
 
@@ -82,9 +87,35 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
   }
 }
 
-/* Current tested mobile placement: 400px below initial Webamp anchor. */
+/* Mobile: overlap the lower terminal without affecting document flow. */
 @media (max-width: 600px) {
-  #webamp { transform: translateY(400px) !important; z-index: 2000 !important; }
+  .terminal.floating-terminal {
+    width: calc(100vw - 12px);
+    height: calc(100dvh - 110px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .terminal.floating-terminal .output {
+    max-height: none;
+    min-height: 0;
+    flex: 1;
+    overflow: auto;
+  }
+
+  .terminal.floating-terminal #shell {
+    flex-shrink: 0;
+  }
+
+  #webamp {
+    position: fixed !important;
+    left: 8px !important;
+    top: calc(55vh - 90px) !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    z-index: 2000 !important;
+  }
 }
 
 /* Accessible navigation stays above Webamp and terminal. */
@@ -113,4 +144,42 @@ header { position: relative; z-index: 5000; }
   .site-navigation { margin-left: auto; }
   #menu-toggle span { font-size: 0.9rem; }
   .accessible-panel { margin: 12px 4px; }
+}
+/* Desktop window positions */
+@media (min-width: 801px) {
+  .terminal.floating-terminal {
+    left: 4px !important;
+    top: 150px !important;
+    z-index: 1000 !important;
+  }
+
+  #webamp {
+    left: 430px !important;
+    top: 180px !important;
+    z-index: 99999 !important;
+  }
+}
+/* Mobile: open Winamp near the top of the screen */
+@media (max-width: 600px) {
+  #webamp {
+    top: 80px !important;
+  }
+}
+/* Mobile layout corrections */
+@media (max-width: 600px) {
+  .terminal.floating-terminal {
+    position: fixed !important;
+    left: 4px !important;
+    top: 120px !important;
+    width: calc(100vw - 8px) !important;
+    height: calc(100dvh - 128px) !important;
+    max-height: calc(100dvh - 128px) !important;
+  }
+
+  #webamp {
+    position: fixed !important;
+    left: 8px !important;
+    top: 140px !important;
+    z-index: 99999 !important;
+  }
 }
