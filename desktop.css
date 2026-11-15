@@ -4,6 +4,8 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
 /* Webamp manages its own floating windows. */
 #winamp-container {
   position: relative;
+  /* Webamp centers its floating windows on this anchor. */
+  top: 105px;
   height: 1px;
   min-height: 0;
   margin-bottom: 0;
@@ -37,7 +39,8 @@ main { max-width: none; margin: 12px 0; padding: 0 24px; }
 }
 @media (max-width: 600px) {
   main { padding: 0 8px; }
-  #winamp-container { zoom: 1.15; }
+  #winamp-container { top: 145px; zoom: 1.15; }
   .terminal.floating-terminal { width: calc(100vw - 24px); }
   .terminal.floating-terminal .output { max-height: 35vh; }
 }
+
